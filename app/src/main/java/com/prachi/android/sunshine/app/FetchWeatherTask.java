@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Vector;
 
@@ -43,10 +44,6 @@ class FetchWeatherTask extends AsyncTask<String, Void, Void>
         mContext = context;
 
     }
-
-
-    private boolean DEBUG = true;
-
 
 
 
@@ -124,6 +121,7 @@ class FetchWeatherTask extends AsyncTask<String, Void, Void>
         final String OWM_TEMPERATURE = "temp";
         final String OWM_MAX = "max";
         final String OWM_MIN = "min";
+
         final String OWM_WEATHER = "weather";
         final String OWM_DESCRIPTION = "main";
         final String OWM_WEATHER_ID = "id";
@@ -169,6 +167,7 @@ class FetchWeatherTask extends AsyncTask<String, Void, Void>
                     dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
             description = weatherObject.getString(OWM_DESCRIPTION);
             weatherId = weatherObject.getInt(OWM_WEATHER_ID);
+            Log.i(LOG_TAG,"The wWeather id is "+weatherId);
 // Temperatures are in a child object called "temp". Try not to name variables
 // "temp" when working with temperature. It confuses everybody.
             JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
@@ -193,9 +192,10 @@ class FetchWeatherTask extends AsyncTask<String, Void, Void>
         if (cVVector.size() > 0) {
             ContentValues[] cvArray = new ContentValues[cVVector.size()];
             cVVector.toArray(cvArray);
+            Log.i(LOG_TAG, "cvArray " + Arrays.toString(cvArray));
             int rowsInserted = mContext.getContentResolver()
                     .bulkInsert(WeatherEntry.CONTENT_URI, cvArray);
-            Log.v(LOG_TAG, "inserted " + rowsInserted + " rows of weather data");
+            Log.i(LOG_TAG, "inserted " + rowsInserted + " rows of weather data");
 // Use a DEBUG variable to gate whether or not you do this, so you can easily
 // turn it on and off, and so that it's easy to see what you can rip out if
 // you ever want to remove it.
