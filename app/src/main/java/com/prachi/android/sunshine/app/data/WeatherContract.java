@@ -31,7 +31,7 @@ public class WeatherContract {
     // relationship between a domain name and its website.  A convenient string to use for the
     // content authority is the package name for the app, which is guaranteed to be unique on the
     // device.
-    /* TODO Uncomment for
+    /*
     4b - Adding ContentProvider to our Contract
     https://www.udacity.com/course/viewer#!/c-ud853/l-1576308909/m-1637521471*/
     public static final String CONTENT_AUTHORITY = "com.prachi.android.sunshine.app";
