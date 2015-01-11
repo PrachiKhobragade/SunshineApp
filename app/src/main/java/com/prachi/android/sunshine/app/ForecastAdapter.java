@@ -20,6 +20,8 @@ public class ForecastAdapter extends CursorAdapter {
     private final int VIEW_TYPE_TODAY =0;
     private final int VIEW_TYPE_FUTURE_DAY =1;
     private String LOG_TAG = ForecastAdapter.class.getSimpleName();
+    private boolean mUseTodayLayout = false;
+
     public ForecastAdapter(Context context, Cursor c, int flags) {
 
         super(context, c, flags);
@@ -46,12 +48,26 @@ public class ForecastAdapter extends CursorAdapter {
 
         ViewHolder viewHolder = (ViewHolder)view.getTag();
 
+        int viewType = getItemViewType(cursor.getPosition());
+       switch (viewType) {
+         case VIEW_TYPE_TODAY: {
+             // Get weather icon
+                     viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
+                             cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+             break;
+             }
+         case VIEW_TYPE_FUTURE_DAY: {
+             // Get weather icon
+                     viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+                             cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+             break;
+             }
+         }
         // Read weather icon ID from cursor
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
-        Log.i(LOG_TAG,"The waether id is "+weatherId);
+
 // Use placeholder image for now
 
-        viewHolder.iconView.setImageResource(R.drawable.ic_launcher);
+
 // Read date from cursor
         String dateString = cursor.getString(ForecastFragment.COL_WEATHER_DATE);
 // Find TextView and set formatted date on it
@@ -80,9 +96,13 @@ public class ForecastAdapter extends CursorAdapter {
        return 2;
     }
 
+    public void setUseTodayLayout(boolean useTodayLayout)
+    {
+        mUseTodayLayout = useTodayLayout;
+    }
     @Override
     public int getItemViewType(int position) {
-        return (position ==0)?VIEW_TYPE_TODAY:VIEW_TYPE_FUTURE_DAY;
+        return (position ==0 && mUseTodayLayout)?VIEW_TYPE_TODAY:VIEW_TYPE_FUTURE_DAY;
     }
 
 

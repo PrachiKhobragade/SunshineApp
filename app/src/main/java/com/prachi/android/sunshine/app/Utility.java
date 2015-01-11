@@ -35,7 +35,7 @@ public class Utility {
                 context.getString(R.string.pref_temp_default))
                 .equals(context.getString(R.string.pref_temp_default));
     }
-    static String formatTemperature(Context context,double temperature, boolean isMetric) {
+     public static String formatTemperature(Context context,double temperature, boolean isMetric) {
         double temp;
         temperature -=272.15;
         if ( !isMetric ) {

@@ -18,15 +18,18 @@
   */
 
  package com.prachi.android.sunshine.app.test;
-import android.annotation.TargetApi;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.test.AndroidTestCase;
-import com.prachi.android.sunshine.app.data.WeatherContract.LocationEntry;
-import com.prachi.android.sunshine.app.data.WeatherContract.WeatherEntry;
+
+ import android.annotation.TargetApi;
+ import android.content.ContentUris;
+ import android.content.ContentValues;
+ import android.database.Cursor;
+ import android.net.Uri;
+ import android.os.Build;
+ import android.test.AndroidTestCase;
+ import android.util.Log;
+
+ import com.prachi.android.sunshine.app.data.WeatherContract.LocationEntry;
+ import com.prachi.android.sunshine.app.data.WeatherContract.WeatherEntry;
 
 public class TestProvider extends AndroidTestCase {
 
@@ -209,7 +212,7 @@ public class TestProvider extends AndroidTestCase {
 
      /* TODO Uncomment for
      4b - Updating and Deleting
-     https://www.udacity.com/course/viewer#!/c-ud853/l-1576308909/e-1675098563/m-1675098564
+     https://www.udacity.com/course/viewer#!/c-ud853/l-1576308909/e-1675098563/m-1675098564*/
      public void testUpdateLocation() {
          // Create a new map of values, where column names are the keys
          ContentValues values = TestDb.createNorthPoleLocationValues();
@@ -243,7 +246,7 @@ public class TestProvider extends AndroidTestCase {
 
          TestDb.validateCursor(cursor, updatedValues);
      }
-     */
+  /*   */
 
      // Make sure we can still delete after adding/updating stuff
      public void testDeleteRecordsAtEnd() {
@@ -307,4 +310,31 @@ public class TestProvider extends AndroidTestCase {
                  .insert(WeatherEntry.CONTENT_URI, kalamazooWeatherValues);
          assertTrue(weatherInsertUri != null);
      }
+
+        public void testUpdateAndReadWeather() {
+            insertKalamazooData();
+            String newDescription = "Cats and Frogs (don't warn the tadpoles!)";
+
+            // Make an update to one value.
+            ContentValues kalamazooUpdate = new ContentValues();
+            kalamazooUpdate.put(WeatherEntry.COLUMN_SHORT_DESC, newDescription);
+
+            mContext.getContentResolver().update(
+                    WeatherEntry.CONTENT_URI, kalamazooUpdate, null, null);
+
+            // A cursor is your primary interface to the query results.
+            Cursor weatherCursor = mContext.getContentResolver().query(
+                    WeatherEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            // Make the same update to the full ContentValues for comparison.
+            ContentValues kalamazooAltered = createKalamazooWeatherValues(locationRowId);
+            kalamazooAltered.put(WeatherEntry.COLUMN_SHORT_DESC, newDescription);
+
+            TestDb.validateCursor(weatherCursor, kalamazooAltered);
 }
+    }

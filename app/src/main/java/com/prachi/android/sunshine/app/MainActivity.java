@@ -1,29 +1,44 @@
 package com.prachi.android.sunshine.app;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.prachi.android.sunshine.app.sync.SunshineSyncAdapter;
 
-public class MainActivity extends ActionBarActivity {
 
+public class MainActivity extends ActionBarActivity  implements ForecastFragment.Callback{
+
+    private boolean mTwoPane = false;
     private String LOG_TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i(LOG_TAG,"Inside main activity onCreate");
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
-                    .commit();
+        if(findViewById(R.id.weather_detail_container)!= null)
+        {
+            mTwoPane = true;
+
+            if(savedInstanceState == null)
+            {
+                getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.weather_detail_container, new DetailFragment())
+                        .commit();
+            }
         }
+        else
+        {
+            mTwoPane = false;
+        }
+        ForecastFragment forecastFragment = ((ForecastFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_forecast));
+        forecastFragment.setUseTodayLayout(!mTwoPane);
+
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
 
@@ -48,37 +63,39 @@ public class MainActivity extends ActionBarActivity {
             startActivity(settingIntent);
             return true;
         }
-        else if (id==R.id.action_map)
-        {
-            openPreferredLocation();
-        }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void openPreferredLocation()
-    {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = prefs.getString(
-                getString(R.string.pref_location_key),
-                getString(R.string.pref_location_default));
-        Uri geoLocation =new Uri.Builder().scheme("geo").encodedOpaquePart("0,0?q= " +Uri.encode(location)).build();
-                //Uri.parse("geo:0,0").buildUpon().
-               // appendQueryParameter("q", location).build();
-        Log.i("LocationStringBefore",geoLocation.toString());
-        geoLocation.getEncodedQuery();
-        Log.i("LocationString",geoLocation.toString());
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-        if (intent.resolveActivity(getPackageManager()) != null) {
+
+
+    @Override
+    public void onItemSelected(String date) {
+        if (mTwoPane)
+        {
+            // in two pane mode show the detail view in this
+            // activity by adding or replacing a detail fragment by
+            // using a fragmrnt transaction
+
+            Bundle args = new Bundle();
+            args.putString(DetailActivity.DATE_KEY , date);
+
+            DetailFragment fragment =  new DetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.weather_detail_container,fragment)
+                    .commit();
+        }
+        else
+        {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailActivity.DATE_KEY,date);
             startActivity(intent);
+
         }
 
 
+
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-
 }

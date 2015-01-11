@@ -38,7 +38,6 @@ public class DetailFragment  extends Fragment implements LoaderManager.LoaderCal
     private static final String LOG_TAG =  DetailFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
-    public static final String DATE_KEY = "forecast_date";
     private static final String LOCATION_KEY = "location";
 
     private ShareActionProvider mShareActionProvider;
@@ -73,9 +72,7 @@ public class DetailFragment  extends Fragment implements LoaderManager.LoaderCal
     private TextView mWindView;
     private TextView mPressureView;
 
-    public DetailFragment()
-
-    {
+    public DetailFragment() {
         setHasOptionsMenu(true);
     }
 
@@ -105,7 +102,10 @@ public class DetailFragment  extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onResume() {
         super.onResume();
-        if (mLocation != null &&
+        Bundle arguments = getArguments();
+
+        if (arguments != null && arguments.containsKey(DetailActivity.DATE_KEY) &&
+                mLocation != null &&
                 !mLocation.equals(Utility.getPreferredLocation(getActivity()))) {
             getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
         }
@@ -136,26 +136,30 @@ public class DetailFragment  extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             mLocation = savedInstanceState.getString(LOCATION_KEY);
         }
-        super.onActivityCreated(savedInstanceState);
+        Bundle args = getArguments();
+        if(args!= null && args.containsKey(DetailActivity.DATE_KEY))
+        {
+            getLoaderManager().initLoader(DETAIL_LOADER,null, this);
+        }
+
     }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.v(LOG_TAG, "In onCreateLoader");
-        Intent intent = getActivity().getIntent();
-        if (intent == null || !intent.hasExtra(DATE_KEY)) {
-            return null;
-        }
-        String forecastDate = intent.getStringExtra(DATE_KEY);
+
+
+
+        String forecastDate = getArguments().getString(DetailActivity.DATE_KEY);
 // Sort order: Ascending, by date.
         String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATETEXT + " ASC";
         mLocation = Utility.getPreferredLocation(getActivity());
         Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                 mLocation, forecastDate);
-        Log.v(LOG_TAG, weatherForLocationUri.toString());
+
 // Now create and return a CursorLoader that will take care of
 // creating a Cursor for the data being displayed.
         return new CursorLoader(
@@ -173,9 +177,11 @@ public class DetailFragment  extends Fragment implements LoaderManager.LoaderCal
         if (data != null && data.moveToFirst()) {
             // Read weather condition ID from cursor
              int weatherId = data.getInt(data.getColumnIndex(WeatherEntry.COLUMN_WEATHER_ID));
-            // Use placeholder Image
-            mIconView.setImageResource(R.drawable.ic_launcher);
 
+
+            // Use placeholder Image
+           // mIconView.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
+            mIconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
             // Read date from cursor and update views for day of week and date
             String date = data.getString(data.getColumnIndex(WeatherEntry.COLUMN_DATETEXT));
             String friendlyDateText = Utility.getDayName(getActivity(), date);
@@ -216,7 +222,7 @@ public class DetailFragment  extends Fragment implements LoaderManager.LoaderCal
             // We still need this for the share intent
             mForecast = String.format("%s - %s - %s/%s", dateText, description, high, low);
 
-            Log.v(LOG_TAG, "Forecast String: " + mForecast);
+            Log.i(LOG_TAG, "Forecast String: " + mForecast);
 
             // If onCreateOptionsMenu has already happened, we need to update the share intent now.
             if (mShareActionProvider != null) {

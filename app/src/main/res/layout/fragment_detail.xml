@@ -15,12 +15,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/detail_day_textview"
-        android:text="7th june,2014" />
+        android:fontFamily="sans-serif-condensed"
+        android:textAppearance="?android:textAppearanceLarge"
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="7th jun32 , 2014"
-        android:id="@+id/detail_date_textview" />
+        android:id="@+id/detail_date_textview"
+        android:fontFamily="sans-serif-condensed"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="@color/text_grey"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -39,16 +43,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="33"
             android:id="@+id/detail_high_textview"
-            android:layout_gravity="left" />
+            android:layout_gravity="left"
+            android:fontFamily="sans-serif-light"
+            android:textSize="96sp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="22"
             android:id="@+id/detail_low_textview"
             android:layout_gravity="left"
+            android:fontFamily="sans-serif-light"
+            android:textSize="46sp"
+            android:textColor="@color/text_grey"
             />
     </LinearLayout>
 
@@ -67,7 +75,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Clear"
             android:id="@+id/detail_forecast_textview"
             />
     </LinearLayout>
@@ -75,19 +82,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Humidity"
-        android:id="@+id/detail_humidity_textview" />
+        android:id="@+id/detail_humidity_textview"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="wind"
         android:id="@+id/detail_wind_textview" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="pressure"
         android:id="@+id/detail_pressure_textview" />
 
 </LinearLayout>
