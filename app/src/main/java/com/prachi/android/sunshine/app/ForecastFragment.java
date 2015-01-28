@@ -32,7 +32,7 @@ import java.util.Date;
 public class ForecastFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
     private static final String SELECTED_KEY = "SelectionPosition";
-    private ForecastAdapter arrayForecastAdapter= null;
+    private ForecastAdapter mForecastAdapter= null;
 
     private static final int FORECAST_LOADER = 0;
     private String mLocation;
@@ -105,8 +105,8 @@ public class ForecastFragment extends Fragment implements LoaderCallbacks<Cursor
 
     private void openPreferredLocation()
     {
-        if ( null != arrayForecastAdapter ) {
-            Cursor c = arrayForecastAdapter.getCursor();
+        if ( null != mForecastAdapter ) {
+            Cursor c = mForecastAdapter.getCursor();
             if (null != c) {
                 c.moveToPosition(0);
                 String posLat = c.getString(COL_COORD_LAT);
@@ -131,9 +131,9 @@ public class ForecastFragment extends Fragment implements LoaderCallbacks<Cursor
     public void setUseTodayLayout(boolean useTodayLayout)
     {
         mUseTodayLayout = useTodayLayout;
-        if(arrayForecastAdapter != null)
+        if(mForecastAdapter != null)
         {
-            arrayForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
         }
     }
     @Override
@@ -143,19 +143,19 @@ public class ForecastFragment extends Fragment implements LoaderCallbacks<Cursor
 
         Log.i(LOG_TAG,"INside OnCreateView");
 
-        arrayForecastAdapter = new ForecastAdapter(getActivity(),null,0);
+        mForecastAdapter = new ForecastAdapter(getActivity(),null,0);
 
-        arrayForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
          mlistView = (ListView)rootView.findViewById(R.id.listview_forecast);
 
-        mlistView.setAdapter(arrayForecastAdapter);
-        Cursor cursor = arrayForecastAdapter.getCursor();
+        mlistView.setAdapter(mForecastAdapter);
+        Cursor cursor = mForecastAdapter.getCursor();
       //  Log.i(LOG_TAG,"On create View , the num of columns in cursor "+ cursor.getColumnCount());
         mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = arrayForecastAdapter.getCursor();
+                Cursor cursor = mForecastAdapter.getCursor();
                 if (cursor != null && cursor.moveToPosition(position)) {
                     ((Callback)getActivity()).onItemSelected( cursor.getString(COL_WEATHER_DATE));
 
@@ -233,7 +233,7 @@ public class ForecastFragment extends Fragment implements LoaderCallbacks<Cursor
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        arrayForecastAdapter.swapCursor(data);
+        mForecastAdapter.swapCursor(data);
         if(mPosition != ListView.INVALID_POSITION)
         {
             mlistView.setSelection(mPosition);
@@ -243,7 +243,7 @@ public class ForecastFragment extends Fragment implements LoaderCallbacks<Cursor
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        arrayForecastAdapter.swapCursor(null);
+        mForecastAdapter.swapCursor(null);
     }
 
     /**
